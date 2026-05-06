@@ -1404,9 +1404,24 @@ function attachEvents() {
     render();
   }));
   document.querySelectorAll("[data-login]").forEach(btn => btn.addEventListener("click", () => {
+    console.log("Use button clicked for:", btn.dataset.login);
     const user = demoUsers.find(u => u.email === btn.dataset.login);
-    document.getElementById("email").value = user.email;
-    document.getElementById("password").value = user.password;
+    console.log("Found user:", user);
+    if (user) {
+      // Fill form fields
+      document.getElementById("email").value = user.email;
+      document.getElementById("password").value = user.password;
+      
+      // Trigger login process immediately
+      console.log("Calling saveUser with:", user);
+      saveUser(user);
+      console.log("User saved, current state.user:", state.user);
+      toast(`Authenticated as ${user.role}.`);
+      location.hash = user.role === "Citizen" ? "#/citizen" : user.role === "Government" ? "#/government" : user.role === "NGO" ? "#/ngo" : "#/admin";
+      console.log("Hash changed to:", location.hash);
+      render();
+      console.log("Render called");
+    }
   }));
 
   const loginForm = document.getElementById("loginForm");
@@ -1495,9 +1510,53 @@ function attachEvents() {
   document.querySelectorAll("[data-action='processDocument']").forEach(btn => btn.addEventListener("click", () => {
     const file = document.getElementById("documentFile").files[0];
     const text = document.getElementById("documentText").value;
+    
+    // Enhanced document extraction with file processing
+    let extractedFeatures = [];
+    
+    if (file) {
+      // Extract features from file name and type
+      extractedFeatures.push(`File: ${file.name}`);
+      extractedFeatures.push(`Type: ${file.type || 'Unknown'}`);
+      extractedFeatures.push(`Size: ${(file.size / 1024).toFixed(2)} KB`);
+    }
+    
+    // Extract features from text
+    if (text) {
+      if (text.toLowerCase().includes('aadhaar')) {
+        extractedFeatures.push('Aadhaar Card Detected');
+        extractedFeatures.push('ID Verification Ready');
+      }
+      if (text.toLowerCase().includes('widow')) {
+        extractedFeatures.push('Widow Status Detected');
+        extractedFeatures.push('Pension Eligibility Available');
+      }
+      if (text.toLowerCase().includes('bpl')) {
+        extractedFeatures.push('BPL Status Detected');
+        extractedFeatures.push('Priority Scheme Access');
+      }
+      if (text.toLowerCase().includes('income')) {
+        extractedFeatures.push('Income Information Extracted');
+      }
+      if (text.toLowerCase().includes('female') || text.toLowerCase().includes('woman')) {
+        extractedFeatures.push('Female Gender Detected');
+        extractedFeatures.push('Women Schemes Available');
+      }
+      if (text.toLowerCase().includes('age')) {
+        extractedFeatures.push('Age Information Extracted');
+      }
+    }
+    
+    // Process document profile
     state.docExtract = extractDocumentProfile(text, file?.name || "");
     state.docMatches = calculateEligibility(state.docExtract);
-    toast(`Document extracted. ${state.docMatches.length} yojanas matched.`);
+    
+    // Enhanced feedback with detected features
+    const featuresMessage = extractedFeatures.length > 0 
+      ? `Features detected: ${extractedFeatures.join(', ')}` 
+      : 'Document processed successfully';
+    
+    toast(`Document extracted. ${state.docMatches.length} yojanas matched. ${featuresMessage}`);
     render();
   }));
 

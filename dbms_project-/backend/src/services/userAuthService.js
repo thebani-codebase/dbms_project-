@@ -442,25 +442,243 @@ class UserAuthService {
 
             // Import documents
             data.documents.forEach(doc => {
-                this.documents.set(doc.documentId, doc);
-            });
+}
 
-            this.saveToStorage();
+// Get all users (for admin)
+getAllUsers() {
+    return Array.from(this.users.values())
+        .map(user => {
+            const { password: _, ...userWithoutPassword } = user;
+            return userWithoutPassword;
+        });
+}
 
-            console.log(`Imported ${data.users.length} users and ${data.documents.length} documents`);
+// Get all documents (for admin)
+getAllDocuments() {
+    return Array.from(this.documents.values());
+}
 
-            return {
-                success: true,
-                message: `Successfully imported ${data.users.length} users and ${data.documents.length} documents`
-            };
-        } catch (error) {
-            console.error('Import error:', error);
+// Update user profile
+async updateUserProfile(aadhaarNumber, updateData) {
+    try {
+        const user = this.users.get(aadhaarNumber);
+        if (!user) {
             return {
                 success: false,
-                message: 'Import failed: ' + error.message
+                message: 'User not found'
             };
         }
+
+        // Update user data
+        const updatedUser = {
+            ...user,
+            ...updateData,
+            updatedAt: new Date().toISOString()
+        };
+
+        this.users.set(aadhaarNumber, updatedUser);
+        this.saveToStorage();
+
+        console.log('User profile updated successfully:', updatedUser);
+
+        return {
+            success: true,
+            message: 'Profile updated successfully',
+            data: updatedUser
+        };
+    } catch (error) {
+        console.error('Profile update error:', error);
+        return {
+            success: false,
+            message: 'Profile update failed: ' + error.message
+        };
     }
+}
+
+// Delete user (admin function)
+async deleteUser(aadhaarNumber) {
+    try {
+        const user = this.users.get(aadhaarNumber);
+        if (!user) {
+            return {
+                success: false,
+                message: 'User not found'
+            };
+        }
+
+        // Delete user
+        this.users.delete(aadhaarNumber);
+        
+        // Delete user's documents
+        const userDocuments = Array.from(this.documents.values())
+            .filter(doc => doc.aadhaarNumber === aadhaarNumber);
+        
+        userDocuments.forEach(doc => {
+            this.documents.delete(doc.documentId);
+        });
+
+        this.saveToStorage();
+
+        console.log('User deleted successfully:', aadhaarNumber);
+
+        return {
+            success: true,
+            message: 'User deleted successfully'
+        };
+    } catch (error) {
+        console.error('User deletion error:', error);
+        return {
+            success: false,
+            message: 'User deletion failed: ' + error.message
+        };
+    }
+}
+
+// Verify document
+async verifyDocument(documentId, isVerified) {
+    try {
+        const document = this.documents.get(documentId);
+        if (!document) {
+            return {
+                success: false,
+                message: 'Document not found'
+            };
+        }
+
+        // Update verification status
+        const updatedDocument = {
+            ...document,
+            isVerified: isVerified ? 'Y' : 'N',
+            verificationDate: new Date().toISOString()
+        };
+
+        this.documents.set(documentId, updatedDocument);
+        this.saveToStorage();
+
+        console.log('Document verification updated:', updatedDocument);
+
+        return {
+            success: true,
+            message: `Document ${isVerified ? 'verified' : 'unverified'} successfully`,
+            data: updatedDocument
+        };
+    } catch (error) {
+        console.error('Document verification error:', error);
+        return {
+            success: false,
+            message: 'Document verification failed: ' + error.message
+        };
+    }
+}
+
+// Search users
+searchUsers(query) {
+    const lowerQuery = query.toLowerCase();
+    
+    return Array.from(this.users.values())
+        .filter(user => {
+            const { password: _, ...userWithoutPassword } = user;
+            const searchString = `${userWithoutPassword.firstName} ${userWithoutPassword.lastName} ${userWithoutPassword.aadhaarNumber} ${userWithoutPassword.occupation}`.toLowerCase();
+            return searchString.includes(lowerQuery);
+        })
+        .map(user => {
+            const { password: _, ...userWithoutPassword } = user;
+            return userWithoutPassword;
+        });
+}
+
+// Export data
+exportData() {
+    const data = {
+        users: Array.from(this.users.values()).map(user => {
+            const { password: _, ...userWithoutPassword } = user;
+            return userWithoutPassword;
+        }),
+        documents: Array.from(this.documents.values()),
+        exportedAt: new Date().toISOString(),
+        statistics: this.getUserStatistics()
+    };
+
+    return data;
+}
+
+// Import data
+async importData(data) {
+    try {
+        if (!data.users || !data.documents) {
+            return {
+                success: false,
+                message: 'Invalid data format'
+            };
+        }
+
+        // Clear existing data
+        this.users.clear();
+        this.documents.clear();
+
+        // Import users
+        data.users.forEach(user => {
+            this.users.set(user.aadhaarNumber, user);
+        });
+
+        // Import documents
+        data.documents.forEach(doc => {
+            this.documents.set(doc.documentId, doc);
+        });
+
+        this.saveToStorage();
+
+        console.log(`Imported ${data.users.length} users and ${data.documents.length} documents`);
+
+        return {
+            success: true,
+            message: `Imported ${data.users.length} users and ${data.documents.length} documents`
+        };
+    } catch (error) {
+        console.error('Import error:', error);
+        return {
+            success: false,
+            message: error.message
+        };
+    }
+}
+
+// Update user features
+async updateUserFeatures(aadhaarNumber, extractedFeatures) {
+    try {
+        const user = this.users.get(aadhaarNumber);
+        
+        if (!user) {
+            return {
+                success: false,
+                message: 'User not found'
+            };
+        }
+
+        // Update user with extracted features
+        user.extractedFeatures = user.extractedFeatures || [];
+        user.extractedFeatures.push({
+            features: extractedFeatures,
+            updatedAt: new Date().toISOString()
+        });
+
+        // Update user in storage
+        this.users.set(aadhaarNumber, user);
+        this.saveToStorage();
+
+        return {
+            success: true,
+            message: 'Features updated successfully',
+            data: user
+        };
+    } catch (error) {
+        console.error('Update features error:', error);
+        return {
+            success: false,
+            message: error.message
+        };
+    }
+}
 }
 
 module.exports = UserAuthService;

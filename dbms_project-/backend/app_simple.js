@@ -89,6 +89,34 @@ app.post('/api/v1/beneficiary/login', async (req, res) => {
   }
 });
 
+// Update user profile with extracted features
+app.post('/api/v1/beneficiary/update-features', async (req, res) => {
+  try {
+    const { aadhaarNumber, extractedFeatures } = req.body;
+    
+    if (!aadhaarNumber || !extractedFeatures) {
+      return res.status(400).json({
+        success: false,
+        message: 'Aadhaar number and extracted features are required'
+      });
+    }
+    
+    const result = await userAuthService.updateUserFeatures(aadhaarNumber, extractedFeatures);
+    
+    if (result.success) {
+      res.json(result);
+    } else {
+      res.status(400).json(result);
+    }
+  } catch (error) {
+    console.error('Update features error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
 // Document upload
 app.post('/api/v1/documents/upload', async (req, res) => {
   try {
