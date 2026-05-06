@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oracle Integration Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .test-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px;
+            font-size: 16px;
+        }
+        .test-button:hover {
+            background: #5a6fd8;
+        }
+        .result {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .status.online {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.offline {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Oracle Integration Test</h1>
+        <div id="connectionStatus" class="status">Checking connection...</div>
+        
+        <h2>🔗 Test Links</h2>
+        <p><strong>Oracle Query Interface:</strong> <a href="http://127.0.0.1:5173/oracle-query-interface.html" target="_blank">http://127.0.0.1:5173/oracle-query-interface.html</a></p>
+        <p><strong>Backend API:</strong> <a href="http://localhost:3000/health" target="_blank">http://localhost:3000/health</a></p>
+        
+        <h2>🧪 Test Oracle Operations</h2>
+        
+        <button class="test-button" onclick="testConnection()">🔍 Test Connection</button>
+        <button class="test-button" onclick="testQuery()">📊 Test Query</button>
+        <button class="test-button" onclick="testExplain()">📋 Test Explain</button>
+        <button class="test-button" onclick="testValidate()">✅ Test Validate</button>
+        <button class="test-button" onclick="testHistory()">📜 Test History</button>
+        
+        <div id="testResult" class="result"></div>
+    </div>
+
+    <script>
+        // Test connection to Oracle
+        async function testConnection() {
+            const resultDiv = document.getElementById('testResult');
+            const statusDiv = document.getElementById('connectionStatus');
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/v1/oracle/status');
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    statusDiv.className = 'status online';
+                    statusDiv.textContent = '✅ Oracle Connected: ' + data.database + ' (' + data.connectionType + ')';
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = 'Connection successful!\n' + JSON.stringify(data, null, 2);
+                } else {
+                    throw new Error('Oracle not connected');
+                }
+            } catch (error) {
+                statusDiv.className = 'status offline';
+                statusDiv.textContent = '❌ Oracle Offline: ' + error.message;
+                resultDiv.className = 'result error';
+                resultDiv.textContent = 'Connection failed: ' + error.message;
+            }
+        }
+        
+        // Test query execution
+        async function testQuery() {
+            const resultDiv = document.getElementById('testResult');
+            
+            const query = "SELECT * FROM BENEFICIARY WHERE ANNUAL_INCOME < 50000";
+            
+            resultDiv.className = 'result';
+            resultDiv.textContent = 'Executing query: ' + query + '\n\n';
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/v1/oracle/query', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ query: query })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = '✅ Query executed successfully!\n\n' + 
+                        'Rows returned: ' + result.rowCount + '\n' +
+                        'Execution time: ' + result.executionTime + 'ms\n\n' +
+                        JSON.stringify(result.data, null, 2);
+                } else {
+                    throw new Error(result.message || 'Query execution failed');
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ Query execution error: ' + error.message;
+            }
+        }
+        
+        // Test explain plan
+        async function testExplain() {
+            const resultDiv = document.getElementById('testResult');
+            
+            const query = "SELECT * FROM BENEFICIARY";
+            
+            resultDiv.className = 'result';
+            resultDiv.textContent = 'Generating execution plan for: ' + query + '\n\n';
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/v1/oracle/explain', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ query: query })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = '✅ Execution plan generated!\n\n' + JSON.stringify(result.data, null, 2);
+                } else {
+                    throw new Error(result.message || 'Explain failed');
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ Explain error: ' + error.message;
+            }
+        }
+        
+        // Test query validation
+        async function testValidate() {
+            const resultDiv = document.getElementById('testResult');
+            
+            const query = "SELECT COUNT(*) FROM BENEFICIARY";
+            
+            resultDiv.className = 'result';
+            resultDiv.textContent = 'Validating query: ' + query + '\n\n';
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/v1/oracle/validate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ query: query })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.className = result.success ? 'result success' : 'result error';
+                    resultDiv.textContent = (result.success ? '✅' : '❌') + ' ' + result.message + '\n\n' + JSON.stringify(result, null, 2);
+                } else {
+                    throw new Error('Validation request failed');
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ Validation error: ' + error.message;
+            }
+        }
+        
+        // Test query history
+        async function testHistory() {
+            const resultDiv = document.getElementById('testResult');
+            
+            resultDiv.className = 'result';
+            resultDiv.textContent = 'Fetching query history...\n\n';
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/v1/oracle/history?limit=5');
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = '✅ Query history retrieved!\n\n' + JSON.stringify(result.data, null, 2);
+                } else {
+                    throw new Error(result.message || 'History retrieval failed');
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ History error: ' + error.message;
+            }
+        }
+        
+        // Auto-test connection on page load
+        window.addEventListener('load', () => {
+            testConnection();
+        });
+    </script>
+</body>
+</html>
