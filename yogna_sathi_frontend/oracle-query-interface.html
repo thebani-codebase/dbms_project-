@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oracle Query Interface - Yogna Sathi</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .oracle-interface {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .interface-header {
+            background: linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .interface-header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        
+        .interface-header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        
+        .oracle-status {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #28a745;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-dot.offline {
+            background: #dc3545;
+            animation: none;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .query-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .query-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .query-header h2 {
+            margin: 0;
+            color: #333;
+            font-size: 1.8em;
+        }
+        
+        .query-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .query-tab {
+            padding: 10px 20px;
+            background: #f8f9fa;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .query-tab:hover {
+            background: #e9ecef;
+        }
+        
+        .query-tab.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .query-editor {
+            margin-bottom: 20px;
+        }
+        
+        .query-editor textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: vertical;
+            background: #f8f9fa;
+        }
+        
+        .query-editor textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+        }
+        
+        .query-actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .query-templates {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        
+        .template-card {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .template-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .template-card h4 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 1.1em;
+        }
+        
+        .template-card p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .results-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .results-header h2 {
+            margin: 0;
+            color: #333;
+            font-size: 1.8em;
+        }
+        
+        .results-info {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .result-stat {
+            text-align: center;
+            padding: 10px 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        
+        .result-stat .value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .result-stat .label {
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .results-table th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        
+        .results-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .results-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .results-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .loading .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #f5c6cb;
+            margin-bottom: 20px;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #c3e6cb;
+            margin-bottom: 20px;
+        }
+        
+        .query-history {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+        
+        .history-item {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .history-item .query {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+        
+        .history-item .meta {
+            font-size: 0.8em;
+            color: #666;
+        }
+        
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn-sm {
+            padding: 8px 15px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="oracle-interface">
+        <!-- Header -->
+        <div class="interface-header">
+            <h1>🗄️ Oracle Query Interface</h1>
+            <p>Execute real-time Oracle SQL queries and get instant results</p>
+        </div>
+        
+        <!-- Oracle Status -->
+        <div class="oracle-status">
+            <div class="status-indicator">
+                <div class="status-dot" id="oracleStatusDot"></div>
+                <span id="oracleStatusText">Checking Oracle connection...</span>
+            </div>
+            <div>
+                <strong>Database:</strong> <span id="oracleDatabaseName">Oracle 21c</span> | 
+                <strong>Connection:</strong> <span id="oracleConnectionType">Live</span>
+            </div>
+        </div>
+        
+        <!-- Query Section -->
+        <div class="query-section">
+            <div class="query-header">
+                <h2>🔍 SQL Query Editor</h2>
+                <div>
+                    <button class="btn btn-secondary btn-sm" onclick="clearQuery()">🗑️ Clear</button>
+                    <button class="btn btn-secondary btn-sm" onclick="formatQuery()">✨ Format</button>
+                </div>
+            </div>
+            
+            <!-- Query Tabs -->
+            <div class="query-tabs">
+                <button class="query-tab active" onclick="switchTab('custom')">Custom Query</button>
+                <button class="query-tab" onclick="switchTab('templates')">Query Templates</button>
+                <button class="query-tab" onclick="switchTab('history')">Query History</button>
+            </div>
+            
+            <!-- Custom Query Tab -->
+            <div id="custom-tab" class="tab-content active">
+                <div class="query-editor">
+                    <textarea id="sqlQuery" placeholder="Enter your Oracle SQL query here...
+
+Examples:
+SELECT * FROM BENEFICIARY WHERE ANNUAL_INCOME < 50000;
+SELECT COUNT(*) FROM POLICY_SCHEME WHERE STATUS = 'Active';
+SELECT b.FIRST_NAME, b.LAST_NAME, s.SCHEME_NAME 
+FROM BENEFICIARY b 
+JOIN BENEFICIARY_ENROLLMENT be ON b.BENEFICIARY_ID = be.BENEFICIARY_ID 
+JOIN POLICY_SCHEME s ON be.SCHEME_ID = s.SCHEME_ID 
+WHERE be.ENROLLMENT_STATUS = 'Active';"></textarea>
+                </div>
+                
+                <div class="query-actions">
+                    <button class="btn btn-primary" onclick="executeQuery()">
+                        <span>▶️</span> Execute Query
+                    </button>
+                    <button class="btn btn-success" onclick="explainQuery()">
+                        <span>📊</span> Explain Plan
+                    </button>
+                    <button class="btn btn-secondary" onclick="validateQuery()">
+                        <span>✅</span> Validate Syntax
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Query Templates Tab -->
+            <div id="templates-tab" class="tab-content">
+                <div class="query-templates">
+                    <h3>📋 Query Templates</h3>
+                    <div class="template-grid">
+                        <div class="template-card" onclick="useTemplate('beneficiaries')">
+                            <h4>👥 All Beneficiaries</h4>
+                            <p>Get all beneficiary records with basic information</p>
+                        </div>
+                        <div class="template-card" onclick="useTemplate('schemes')">
+                            <h4>📋 Active Schemes</h4>
+                            <p>Get all active government schemes</p>
+                        </div>
+                        <div class="template-card" onclick="useTemplate('enrollments')">
+                            <h4>📊 Active Enrollments</h4>
+                            <p>Get all active beneficiary enrollments</p>
+                        </div>
+                        <div class="template-card" onclick="useTemplate('eligible')">
+                            <h4>🎯 Eligible Beneficiaries</h4>
+                            <p>Find beneficiaries eligible for specific schemes</p>
+                        </div>
+                        <div class="template-card" onclick="useTemplate('performance')">
+                            <h4>📈 Scheme Performance</h4>
+                            <p>Analyze scheme performance metrics</p>
+                        </div>
+                        <div class="template-card" onclick="useTemplate('gap-analysis')">
+                            <h4>📊 Gap Analysis</h4>
+                            <p>Analyze enrollment gaps by location</p>
+                        </div>
+                        <div class="template-card" onclick="useTemplate('awareness')">
+                            <h4>📢 Awareness Campaigns</h4>
+                            <p>Get awareness campaign statistics</p>
+                        </div>
+                        <div class="template-card" onclick="useTemplate('documents')">
+                            <h4>📄 Document Status</h4>
+                            <p>Check document verification status</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Query History Tab -->
+            <div id="history-tab" class="tab-content">
+                <div class="query-history">
+                    <h3>📜 Query History</h3>
+                    <div id="queryHistoryList">
+                        <div class="no-results">No query history yet</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Results Section -->
+        <div class="results-section">
+            <div class="results-header">
+                <h2>📊 Query Results</h2>
+                <div>
+                    <button class="btn btn-secondary btn-sm" onclick="exportResults('csv')">📥 CSV</button>
+                    <button class="btn btn-secondary btn-sm" onclick="exportResults('json')">📥 JSON</button>
+                    <button class="btn btn-secondary btn-sm" onclick="printResults()">🖨️ Print</button>
+                </div>
+            </div>
+            
+            <div class="results-info">
+                <div class="result-stat">
+                    <div class="value" id="rowCount">0</div>
+                    <div class="label">Rows</div>
+                </div>
+                <div class="result-stat">
+                    <div class="value" id="columnCount">0</div>
+                    <div class="label">Columns</div>
+                </div>
+                <div class="result-stat">
+                    <div class="value" id="executionTime">0ms</div>
+                    <div class="label">Execution Time</div>
+                </div>
+            </div>
+            
+            <div id="resultsContainer">
+                <div class="no-results">
+                    Execute a query to see results here
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Query templates
+        const queryTemplates = {
+            beneficiaries: `SELECT 
+    b.BENEFICIARY_ID,
+    b.FIRST_NAME,
+    b.LAST_NAME,
+    b.AADHAAR_NUMBER,
+    b.GENDER,
+    b.ANNUAL_INCOME,
+    b.LOCATION_ID,
+    l.LOCATION_NAME
+FROM BENEFICIARY b
+JOIN LOCATION l ON b.LOCATION_ID = l.LOCATION_ID
+ORDER BY b.FIRST_NAME;`,
+            
+            schemes: `SELECT 
+    s.SCHEME_ID,
+    s.SCHEME_NAME,
+    s.DOMAIN_ID,
+    d.DOMAIN_NAME,
+    s.MIN_ANNUAL_BENEFIT,
+    s.MAX_ANNUAL_BENEFIT,
+    s.STATUS,
+    s.LAUNCH_YEAR
+FROM POLICY_SCHEME s
+JOIN SCHEME_DOMAIN d ON s.DOMAIN_ID = d.DOMAIN_ID
+WHERE s.STATUS = 'Active'
+ORDER BY s.LAUNCH_YEAR DESC;`,
+            
+            enrollments: `SELECT 
+    be.ENROLLMENT_ID,
+    b.FIRST_NAME || ' ' || b.LAST_NAME AS BENEFICIARY_NAME,
+    s.SCHEME_NAME,
+    be.ENROLLMENT_STATUS,
+    be.APPLICATION_DATE,
+    be.APPROVAL_DATE,
+    be.ANNUAL_BENEFIT_AMOUNT
+FROM BENEFICIARY_ENROLLMENT be
+JOIN BENEFICIARY b ON be.BENEFICIARY_ID = b.BENEFICIARY_ID
+JOIN POLICY_SCHEME s ON be.SCHEME_ID = s.SCHEME_ID
+WHERE be.ENROLLMENT_STATUS IN ('Active', 'Enrolled')
+ORDER BY be.APPLICATION_DATE DESC;`,
+            
+            eligible: `SELECT 
+    b.FIRST_NAME || ' ' || b.LAST_NAME AS BENEFICIARY_NAME,
+    b.ANNUAL_INCOME,
+    b.GENDER,
+    COUNT(em.SCHEME_ID) AS ELIGIBLE_SCHEMES
+FROM BENEFICIARY b
+JOIN ELIGIBILITY_MATCH em ON b.BENEFICIARY_ID = em.BENEFICIARY_ID
+WHERE em.IS_ELIGIBLE = 'Y'
+GROUP BY b.BENEFICIARY_ID, b.FIRST_NAME, b.LAST_NAME, b.ANNUAL_INCOME, b.GENDER
+HAVING COUNT(em.SCHEME_ID) > 3
+ORDER BY COUNT(em.SCHEME_ID) DESC;`,
+            
+            performance: `SELECT 
+    s.SCHEME_NAME,
+    spm.TOTAL_ELIGIBLE,
+    spm.TOTAL_ENROLLED,
+    spm.ENROLLMENT_RATE,
+    spm.TOTAL_ANNUAL_BENEFIT,
+    spm.SATISFACTION_SCORE,
+    spm.REPORTING_QUARTER
+FROM SCHEME_PERFORMANCE_METRICS spm
+JOIN POLICY_SCHEME s ON spm.SCHEME_ID = s.SCHEME_ID
+WHERE spm.REPORTING_QUARTER = (SELECT MAX(REPORTING_QUARTER) FROM SCHEME_PERFORMANCE_METRICS)
+ORDER BY spm.ENROLLMENT_RATE DESC;`,
+            
+            'gap-analysis': `SELECT 
+    l.LOCATION_NAME,
+    COUNT(b.BENEFICIARY_ID) AS TOTAL_BENEFICIARIES,
+    COUNT(CASE WHEN eg.ELIGIBLE_BENEFIT_AMOUNT > 50000 THEN 1 END) AS HIGH_VALUE_GAPS,
+    SUM(eg.ELIGIBLE_BENEFIT_AMOUNT) AS TOTAL_MISSED_BENEFITS
+FROM LOCATION l
+JOIN BENEFICIARY b ON l.LOCATION_ID = b.LOCATION_ID
+LEFT JOIN ENROLLMENT_GAP_ANALYSIS eg ON b.BENEFICIARY_ID = eg.BENEFICIARY_ID
+GROUP BY l.LOCATION_ID, l.LOCATION_NAME
+ORDER BY TOTAL_MISSED_BENEFITS DESC;`,
+            
+            awareness: `SELECT 
+    ac.CAMPAIGN_NAME,
+    ac.CAMPAIGN_TYPE,
+    ac.START_DATE,
+    ac.END_DATE,
+    ac.TARGET_BENEFICIARIES,
+    ac.ACTUAL_REACHED,
+    ROUND((ac.ACTUAL_REACHED / ac.TARGET_BENEFICIARIES) * 100, 2) AS REACH_PERCENTAGE,
+    ac.STATUS
+FROM AWARENESS_CAMPAIGN ac
+ORDER BY ac.START_DATE DESC;`,
+            
+            documents: `SELECT 
+    b.FIRST_NAME || ' ' || b.LAST_NAME AS BENEFICIARY_NAME,
+    d.DOCUMENT_TYPE,
+    d.DOCUMENT_NAME,
+    d.IS_VERIFIED,
+    d.CREATED_AT
+FROM DOCUMENT d
+JOIN BENEFICIARY b ON d.BENEFICIARY_ID = b.BENEFICIARY_ID
+ORDER BY d.IS_VERIFIED DESC, d.CREATED_AT DESC;`
+        };
+        
+        let currentResults = null;
+        let queryHistory = [];
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            checkOracleConnection();
+            loadQueryHistory();
+        });
+        
+        // Check Oracle connection
+        async function checkOracleConnection() {
+            const statusDot = document.getElementById('oracleStatusDot');
+            const statusText = document.getElementById('oracleStatusText');
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/v1/oracle/status');
+                const data = await response.json();
+                
+                if (response.ok && data.connected) {
+                    statusDot.classList.remove('offline');
+                    statusText.textContent = 'Oracle Connected';
+                    document.getElementById('oracleConnectionType').textContent = 'Live';
+                } else {
+                    throw new Error('Oracle not connected');
+                }
+            } catch (error) {
+                statusDot.classList.add('offline');
+                statusText.textContent = 'Oracle Offline - Using Mock Data';
+                document.getElementById('oracleConnectionType').textContent = 'Mock';
+            }
+        }
+        
+        // Switch tabs
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.query-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        // Use query template
+        function useTemplate(templateName) {
+            const query = queryTemplates[templateName];
+            if (query) {
+                document.getElementById('sqlQuery').value = query;
+                switchTab('custom');
+                document.querySelector('.query-tab').classList.add('active');
+            }
+        }
+        
+        // Execute query
+        async function executeQuery() {
+            const query = document.getElementById('sqlQuery').value.trim();
+            if (!query) {
+                showError('Please enter a SQL query');
+                return;
+            }
+            
+            const resultsContainer = document.getElementById('resultsContainer');
+            resultsContainer.innerHTML = '<div class="loading"><div class="spinner"></div><p>Executing query...</p></div>';
+            
+            const startTime = Date.now();
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/v1/oracle/query', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ query: query })
+                });
+                
+                const result = await response.json();
+                const executionTime = Date.now() - startTime;
+                
+                if (response.ok) {
+                    displayResults(result.data, executionTime);
+                    addToHistory(query, result.data, executionTime);
+                    showSuccess(`Query executed successfully - ${result.data.length} rows returned`);
+                } else {
+                    throw new Error(result.message || 'Query execution failed');
+                }
+            } catch (error) {
+                showError(`Query execution error: ${error.message}`);
+                resultsContainer.innerHTML = '<div class="error-message">Query execution failed. Please check your SQL syntax.</div>';
+            }
+        }
+        
+        // Display results
+        function displayResults(data, executionTime) {
+            currentResults = data;
+            
+            if (!data || data.length === 0) {
+                document.getElementById('resultsContainer').innerHTML = '<div class="no-results">No results found</div>';
+                document.getElementById('rowCount').textContent = '0';
+                document.getElementById('columnCount').textContent = '0';
+                document.getElementById('executionTime').textContent = executionTime + 'ms';
+                return;
+            }
+            
+            const columns = Object.keys(data[0]);
+            let tableHTML = '<table class="results-table"><thead><tr>';
+            
+            // Header row
+            columns.forEach(column => {
+                tableHTML += `<th>${column}</th>`;
+            });
+            tableHTML += '</tr></thead><tbody>';
+            
+            // Data rows
+            data.forEach(row => {
+                tableHTML += '<tr>';
+                columns.forEach(column => {
+                    const value = row[column] !== null ? row[column] : '';
+                    tableHTML += `<td>${escapeHtml(value)}</td>`;
+                });
+                tableHTML += '</tr>';
+            });
+            
+            tableHTML += '</tbody></table>';
+            
+            document.getElementById('resultsContainer').innerHTML = tableHTML;
+            document.getElementById('rowCount').textContent = data.length;
+            document.getElementById('columnCount').textContent = columns.length;
+            document.getElementById('executionTime').textContent = executionTime + 'ms';
+        }
+        
+        // Explain query
+        async function explainQuery() {
+            const query = document.getElementById('sqlQuery').value.trim();
+            if (!query) {
+                showError('Please enter a SQL query');
+                return;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/v1/oracle/explain', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ query: query })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    displayResults(result.data, 0);
+                    showSuccess('Query execution plan generated');
+                } else {
+                    throw new Error(result.message || 'Failed to explain query');
+                }
+            } catch (error) {
+                showError(`Query explanation error: ${error.message}`);
+            }
+        }
+        
+        // Validate query
+        async function validateQuery() {
+            const query = document.getElementById('sqlQuery').value.trim();
+            if (!query) {
+                showError('Please enter a SQL query');
+                return;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/v1/oracle/validate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ query: query })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showSuccess('Query syntax is valid');
+                } else {
+                    throw new Error(result.message || 'Query syntax is invalid');
+                }
+            } catch (error) {
+                showError(`Query validation error: ${error.message}`);
+            }
+        }
+        
+        // Clear query
+        function clearQuery() {
+            document.getElementById('sqlQuery').value = '';
+        }
+        
+        // Format query
+        function formatQuery() {
+            const query = document.getElementById('sqlQuery').value;
+            // Simple SQL formatting
+            const formatted = query
+                .replace(/\s+/g, ' ')
+                .replace(/\bSELECT\b/gi, '\nSELECT')
+                .replace(/\bFROM\b/gi, '\nFROM')
+                .replace(/\bWHERE\b/gi, '\nWHERE')
+                .replace(/\bORDER BY\b/gi, '\nORDER BY')
+                .replace(/\bGROUP BY\b/gi, '\nGROUP BY')
+                .replace(/\bHAVING\b/gi, '\nHAVING')
+                .trim();
+            
+            document.getElementById('sqlQuery').value = formatted;
+        }
+        
+        // Export results
+        function exportResults(format) {
+            if (!currentResults || currentResults.length === 0) {
+                showError('No results to export');
+                return;
+            }
+            
+            let content, filename, type;
+            
+            if (format === 'csv') {
+                const columns = Object.keys(currentResults[0]);
+                content = columns.join(',') + '\n';
+                currentResults.forEach(row => {
+                    content += columns.map(col => `"${row[col] || ''}"`).join(',') + '\n';
+                });
+                filename = 'oracle_query_results.csv';
+                type = 'text/csv';
+            } else if (format === 'json') {
+                content = JSON.stringify(currentResults, null, 2);
+                filename = 'oracle_query_results.json';
+                type = 'application/json';
+            }
+            
+            const blob = new Blob([content], { type: type });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showSuccess(`Results exported as ${format.toUpperCase()}`);
+        }
+        
+        // Print results
+        function printResults() {
+            if (!currentResults || currentResults.length === 0) {
+                showError('No results to print');
+                return;
+            }
+            
+            window.print();
+        }
+        
+        // Add to history
+        function addToHistory(query, results, executionTime) {
+            const historyItem = {
+                query: query,
+                timestamp: new Date().toISOString(),
+                rowCount: results.length,
+                executionTime: executionTime
+            };
+            
+            queryHistory.unshift(historyItem);
+            if (queryHistory.length > 10) {
+                queryHistory = queryHistory.slice(0, 10);
+            }
+            
+            saveQueryHistory();
+            updateHistoryDisplay();
+        }
+        
+        // Save query history
+        function saveQueryHistory() {
+            localStorage.setItem('oracle_query_history', JSON.stringify(queryHistory));
+        }
+        
+        // Load query history
+        function loadQueryHistory() {
+            const saved = localStorage.getItem('oracle_query_history');
+            if (saved) {
+                queryHistory = JSON.parse(saved);
+                updateHistoryDisplay();
+            }
+        }
+        
+        // Update history display
+        function updateHistoryDisplay() {
+            const historyList = document.getElementById('queryHistoryList');
+            
+            if (queryHistory.length === 0) {
+                historyList.innerHTML = '<div class="no-results">No query history yet</div>';
+                return;
+            }
+            
+            historyList.innerHTML = queryHistory.map((item, index) => `
+                <div class="history-item">
+                    <div class="query">${escapeHtml(item.query)}</div>
+                    <div class="meta">
+                        ${new Date(item.timestamp).toLocaleString()} | 
+                        ${item.rowCount} rows | 
+                        ${item.executionTime}ms
+                        <button class="btn btn-sm btn-primary" onclick="useHistoryQuery(${index})" style="float: right;">Use</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Use history query
+        function useHistoryQuery(index) {
+            const item = queryHistory[index];
+            document.getElementById('sqlQuery').value = item.query;
+            switchTab('custom');
+            document.querySelector('.query-tab').classList.add('active');
+        }
+        
+        // Show error message
+        function showError(message) {
+            const resultsContainer = document.getElementById('resultsContainer');
+            resultsContainer.innerHTML = `<div class="error-message">${escapeHtml(message)}</div>`;
+        }
+        
+        // Show success message
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            successDiv.textContent = message;
+            successDiv.style.position = 'fixed';
+            successDiv.style.top = '20px';
+            successDiv.style.right = '20px';
+            successDiv.style.zIndex = '9999';
+            successDiv.style.padding = '15px';
+            successDiv.style.borderRadius = '6px';
+            successDiv.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+            
+            document.body.appendChild(successDiv);
+            
+            setTimeout(() => {
+                document.body.removeChild(successDiv);
+            }, 3000);
+        }
+        
+        // Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 'Enter':
+                        e.preventDefault();
+                        executeQuery();
+                        break;
+                    case 'l':
+                        e.preventDefault();
+                        clearQuery();
+                        break;
+                    case 'f':
+                        e.preventDefault();
+                        formatQuery();
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

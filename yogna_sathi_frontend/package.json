@@ -1,0 +1,20 @@
+{
+  "name": "yogna-saathi-dbms-website",
+  "version": "1.0.0",
+  "description": "Yogna Saathi DBMS project website with role login, Oracle API bridge, document AI demo, awareness dashboard, and database workbench.",
+  "main": "oracle_api_server.js",
+  "scripts": {
+    "start:website": "python -m http.server 5173 --bind 127.0.0.1",
+    "start:oracle-api": "node oracle_api_server.js",
+    "check": "node --check app.js && node --check oracle_api_server.js"
+  },
+  "keywords": [
+    "dbms",
+    "oracle",
+    "government-schemes",
+    "yogna-saathi",
+    "localhost"
+  ],
+  "author": "",
+  "license": "MIT"
+}

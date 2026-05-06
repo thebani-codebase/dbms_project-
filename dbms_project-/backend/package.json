@@ -1,0 +1,89 @@
+{
+    "name":  "dbms-government-schemes-backend",
+    "version":  "1.0.0",
+    "description":  "Node.js Backend API for Government Scheme Eligibility \u0026 Enrollment System",
+    "main":  "app.js",
+    "scripts":  {
+                    "start":  "node app.js",
+                    "dev":  "nodemon app.js",
+                    "test":  "jest",
+                    "test:watch":  "jest --watch",
+                    "lint":  "eslint src/",
+                    "migration:run":  "oracle-db-migration run",
+                    "seed":  "node scripts/seedDatabase.js"
+                },
+    "keywords":  [
+                     "government-schemes",
+                     "eligibility",
+                     "enrollment",
+                     "voice-query",
+                     "LLM",
+                     "oracle-database",
+                     "indian-schemes"
+                 ],
+    "author":  "Your Team",
+    "license":  "MIT",
+    "dependencies":  {
+                         "axios":  "^1.6.5",
+                         "body-parser":  "^1.20.2",
+                         "cors":  "^2.8.5",
+                         "dotenv":  "^16.3.1",
+                         "express":  "^4.18.2",
+                         "express-fileupload":  "^1.5.0",
+                         "oracledb":  "^6.0.0",
+                         "@google-cloud/speech":  "^6.0.0",
+                         "@google-cloud/text-to-speech":  "^6.0.0",
+                         "openai":  "^4.26.0",
+                         "uuid":  "^9.0.1",
+                         "joi":  "^17.11.0",
+                         "bcryptjs":  "^2.4.3",
+                         "jsonwebtoken":  "9.0.2",
+                         "winston":  "^3.11.0"
+                     },
+    "devDependencies":  {
+                            "nodemon":  "^3.0.2",
+                            "jest":  "^29.7.0",
+                            "supertest":  "^6.3.3",
+                            "eslint":  "^8.55.0",
+                            "@types/express":  "^4.17.21",
+                            "@types/node":  "^20.10.6"
+                        },
+    "engines":  {
+                    "node":  "\u003e=18.0.0",
+                    "npm":  "\u003e=9.0.0"
+                },
+    "environment_variables":  {
+                                  "DB_USER":  "scheme_admin",
+                                  "DB_PASSWORD":  "Secure@12345",
+                                  "DB_CONNECTION_STRING":  "oracle-host:1521/XEPDB1",
+                                  "OPENAI_API_KEY":  "sk-your-api-key",
+                                  "GCP_PROJECT_ID":  "your-gcp-project",
+                                  "GCP_KEY_FILE":  "/path/to/gcp-key.json",
+                                  "JWT_SECRET":  "your-secret-key",
+                                  "PORT":  3000,
+                                  "NODE_ENV":  "development",
+                                  "ALLOWED_ORIGINS":  "http://localhost:3000,http://localhost:3001"
+                              },
+    "notes":  {
+                  "description":  "Backend for DBMS Government Scheme Eligibility System",
+                  "stages":  {
+                                 "stage_1":  "Database Schema - Oracle 21c (18 tables)",
+                                 "stage_2":  "PL/SQL Business Logic (Procedures, Functions, Triggers)",
+                                 "stage_3":  "Voice-to-SQL LLM Pipeline (GPT-4 + Google Cloud APIs)",
+                                 "stage_4":  "Node.js API Layer (This project)",
+                                 "stage_5":  "Frontend (React Native + Admin Dashboard)",
+                                 "stage_6":  "AWS Infrastructure Deployment"
+                             },
+                  "key_features":  [
+                                       "Voice Query Processing (Punjabi, Hindi, English, etc.)",
+                                       "Scheme Eligibility Matching (1000+ schemes)",
+                                       "Beneficiary Enrollment Management",
+                                       "Gap Analysis \u0026 Priority Scoring",
+                                       "Campaign Analytics \u0026 ROI Tracking",
+                                       "AI-Powered Intent Extraction",
+                                       "SQL Injection Prevention",
+                                       "Multi-language Support"
+                                   ],
+                  "core_innovation":  "Voice-to-SQL Pipeline: Speech → GPT-4 Intent Extraction → Oracle SQL → GPT-4 Response Formatting → Text-to-Speech"
+              }
+}

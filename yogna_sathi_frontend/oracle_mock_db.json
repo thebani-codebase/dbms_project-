@@ -1,0 +1,240 @@
+{
+  "version": 3,
+  "updatedAt": "2026-05-06T16:16:24.606Z",
+  "schemes": [
+    {
+      "id": 1,
+      "name": "Indira Gandhi National Widow Pension",
+      "domain": "Social Security",
+      "benefit": "Rs 18,000/year",
+      "minAge": 40,
+      "maxAge": 120,
+      "gender": "F",
+      "marital": "Widow",
+      "incomeMax": 100000,
+      "tags": [
+        "widow",
+        "senior",
+        "women"
+      ],
+      "steps": [
+        "Aadhaar",
+        "Bank account",
+        "Widow certificate",
+        "Income certificate"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Old Age Pension Scheme",
+      "domain": "Senior Citizen",
+      "benefit": "Rs 12,000/year",
+      "minAge": 60,
+      "maxAge": 120,
+      "gender": "Any",
+      "incomeMax": 120000,
+      "tags": [
+        "senior",
+        "pension"
+      ],
+      "steps": [
+        "Aadhaar",
+        "Age proof",
+        "Bank account",
+        "Residence proof"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Ayushman Bharat PM-JAY",
+      "domain": "Healthcare",
+      "benefit": "Rs 5,00,000 cover",
+      "minAge": 0,
+      "maxAge": 120,
+      "gender": "Any",
+      "incomeMax": 150000,
+      "bpl": true,
+      "tags": [
+        "health",
+        "bpl",
+        "family"
+      ],
+      "steps": [
+        "Aadhaar",
+        "Ration card",
+        "Family ID"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "PM-KISAN Samman Nidhi",
+      "domain": "Agriculture",
+      "benefit": "Rs 6,000/year",
+      "minAge": 18,
+      "maxAge": 120,
+      "gender": "Any",
+      "occupation": "Farmer",
+      "tags": [
+        "farmer",
+        "land"
+      ],
+      "steps": [
+        "Land record",
+        "Aadhaar",
+        "Bank account"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Post Matric Scholarship",
+      "domain": "Education",
+      "benefit": "Tuition + stipend",
+      "minAge": 16,
+      "maxAge": 28,
+      "gender": "Any",
+      "occupation": "Student",
+      "caste": [
+        "SC",
+        "OBC"
+      ],
+      "incomeMax": 250000,
+      "tags": [
+        "student",
+        "scholarship",
+        "youth"
+      ],
+      "steps": [
+        "Caste certificate",
+        "Income certificate",
+        "Marksheets",
+        "Bank account"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Ujjwala Yojana",
+      "domain": "Women & Child",
+      "benefit": "Free LPG connection",
+      "minAge": 18,
+      "maxAge": 120,
+      "gender": "F",
+      "incomeMax": 150000,
+      "bpl": true,
+      "tags": [
+        "women",
+        "bpl",
+        "lpg"
+      ],
+      "steps": [
+        "Aadhaar",
+        "Ration card",
+        "Bank account"
+      ]
+    }
+  ],
+  "beneficiaries": [
+    {
+      "id": 101,
+      "name": "Gurmeet Kaur",
+      "age": 65,
+      "gender": "F",
+      "marital": "Widow",
+      "income": 36000,
+      "bpl": true,
+      "location": "Khera",
+      "documents": [
+        "Aadhaar",
+        "Ration Card",
+        "Widow Certificate"
+      ]
+    },
+    {
+      "id": 102,
+      "name": "Aman Singh",
+      "age": 19,
+      "gender": "M",
+      "marital": "Single",
+      "income": 0,
+      "bpl": true,
+      "location": "Ludhiana",
+      "documents": [
+        "Aadhaar",
+        "Caste Certificate",
+        "Marksheets"
+      ]
+    },
+    {
+      "id": 103,
+      "name": "Meena Devi",
+      "age": 28,
+      "gender": "F",
+      "marital": "Married",
+      "income": 65000,
+      "bpl": true,
+      "location": "Patiala",
+      "documents": [
+        "Aadhaar",
+        "Ration Card",
+        "Bank Account"
+      ]
+    }
+  ],
+  "enrollments": [
+    {
+      "id": 9001,
+      "beneficiaryId": 101,
+      "schemeId": 2,
+      "status": "Active",
+      "annualBenefit": 12000
+    },
+    {
+      "id": 9002,
+      "beneficiaryId": 103,
+      "schemeId": 6,
+      "status": "Applied",
+      "annualBenefit": 0
+    }
+  ],
+  "auditLog": [
+    {
+      "id": 3,
+      "at": "2026-05-06T16:16:24.606Z",
+      "table": "QUERY_HISTORY",
+      "operation": "QUERY",
+      "recordId": 2,
+      "message": "Aggregate COUNT query executed"
+    },
+    {
+      "id": 2,
+      "at": "2026-05-06T16:15:34.682Z",
+      "table": "QUERY_HISTORY",
+      "operation": "QUERY",
+      "recordId": 1,
+      "message": "SELECT returned POLICY_SCHEME rows"
+    },
+    {
+      "id": 1,
+      "table": "POLICY_SCHEME",
+      "operation": "SEED",
+      "recordId": 1,
+      "message": "Initial Oracle mock data loaded",
+      "at": "2026-05-06T16:15:13.891Z"
+    }
+  ],
+  "queryHistory": [
+    {
+      "id": 2,
+      "sql": "SELECT COUNT(*) FROM POLICY_SCHEME;",
+      "message": "Aggregate COUNT query executed",
+      "rows": 1,
+      "at": "2026-05-06T16:16:24.605Z"
+    },
+    {
+      "id": 1,
+      "sql": "SELECT COUNT(*) FROM POLICY_SCHEME;",
+      "message": "SELECT returned POLICY_SCHEME rows",
+      "rows": 6,
+      "at": "2026-05-06T16:15:34.682Z"
+    }
+  ]
+}
