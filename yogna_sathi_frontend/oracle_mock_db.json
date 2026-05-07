@@ -1,6 +1,6 @@
 {
-  "version": 3,
-  "updatedAt": "2026-05-06T16:16:24.606Z",
+  "version": 7,
+  "updatedAt": "2026-05-07T00:41:37.998Z",
   "schemes": [
     {
       "id": 1,
@@ -197,6 +197,38 @@
   ],
   "auditLog": [
     {
+      "id": 7,
+      "at": "2026-05-07T00:41:37.998Z",
+      "table": "QUERY_HISTORY",
+      "operation": "QUERY",
+      "recordId": 6,
+      "message": "SELECT returned POLICY_SCHEME rows"
+    },
+    {
+      "id": 6,
+      "at": "2026-05-07T00:17:57.776Z",
+      "table": "QUERY_HISTORY",
+      "operation": "QUERY",
+      "recordId": 5,
+      "message": "SELECT returned POLICY_SCHEME rows"
+    },
+    {
+      "id": 5,
+      "at": "2026-05-07T00:17:43.302Z",
+      "table": "QUERY_HISTORY",
+      "operation": "QUERY",
+      "recordId": 4,
+      "message": "SELECT returned POLICY_SCHEME rows"
+    },
+    {
+      "id": 4,
+      "at": "2026-05-07T00:08:48.255Z",
+      "table": "QUERY_HISTORY",
+      "operation": "QUERY",
+      "recordId": 3,
+      "message": "SELECT returned POLICY_SCHEME rows"
+    },
+    {
       "id": 3,
       "at": "2026-05-06T16:16:24.606Z",
       "table": "QUERY_HISTORY",
@@ -222,6 +254,34 @@
     }
   ],
   "queryHistory": [
+    {
+      "id": 6,
+      "sql": "SELECT * FROM POLICY_SCHEME;",
+      "message": "SELECT returned POLICY_SCHEME rows",
+      "rows": 6,
+      "at": "2026-05-07T00:41:37.996Z"
+    },
+    {
+      "id": 5,
+      "sql": "SELECT id, name, benefit FROM POLICY_SCHEME WHERE domain LIKE '%Agriculture%';",
+      "message": "SELECT returned POLICY_SCHEME rows",
+      "rows": 6,
+      "at": "2026-05-07T00:17:57.776Z"
+    },
+    {
+      "id": 4,
+      "sql": "SELECT id, name, benefit, incomeMax FROM POLICY_SCHEME WHERE domain = 'Healthcare';",
+      "message": "SELECT returned POLICY_SCHEME rows",
+      "rows": 6,
+      "at": "2026-05-07T00:17:43.301Z"
+    },
+    {
+      "id": 3,
+      "sql": "SELECT * FROM POLICY_SCHEME;",
+      "message": "SELECT returned POLICY_SCHEME rows",
+      "rows": 6,
+      "at": "2026-05-07T00:08:48.253Z"
+    },
     {
       "id": 2,
       "sql": "SELECT COUNT(*) FROM POLICY_SCHEME;",
